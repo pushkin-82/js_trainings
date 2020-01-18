@@ -1,6 +1,6 @@
 'use strict';
 
-let money = prompt("Ваш бюджет на месяц?");
+let money = +prompt("Ваш бюджет на месяц?");
 let time = prompt("Введите дату в формате YYYY-MM-DD");
 
 let appData = {
@@ -12,17 +12,58 @@ let appData = {
     savings : false
 };
 
-let title = prompt("Введите обязательную статью расходов в этом месяце");
-let value = prompt("Во сколько обойдется?");
-let title1 = prompt("Введите обязательную статью расходов в этом месяце");
-let value1 = prompt("Во сколько обойдется?");
+for (let i = 0; i < 2; i++) {
+    let title = prompt("Введите обязательную статью расходов в этом месяце"),
+        value = prompt("Во сколько обойдется?");
+    if (typeof(title) === 'string' && typeof(title) != null && typeof(value) != null
+    && title !== '' && value !== '' && title.length < 50) {
+        appData.expenses[title] = value;
+    } else {
+        i--;
+    }
+}
 
-appData.expenses[title] = value;
-appData.expenses[title1] = value1;
+// let idx = 0;
+// while (idx < 2) {
+//     let title = prompt("Введите обязательную статью расходов в этом месяце"),
+//         value = prompt("Во сколько обойдется?");
+//     idx++;
+//     if (typeof(title) === 'string' && typeof(title) != null && typeof(value) != null
+//         && title !== '' && value !== '' && title.length < 50) {
+//         appData.expenses[title] = value;
+//         console.log('done' + idx);
+//     }
+//     else {
+//         idx--;
+//     }
+// }
 
-alert(appData.budget / 30);
+// let index = 0;
+// do {
+//     let title = prompt("Введите обязательную статью расходов в этом месяце"),
+//         value = prompt("Во сколько обойдется?");
+//
+//     index++;
+//
+//     if (typeof(title) === 'string' && typeof(title) != null && typeof(value) != null
+//         && title !== '' && value !== '' && title.length < 50) {
+//         appData.expenses[title] = value;
+//     }
+//     else {
+//         index--;
+//     }
+// } while (index < 2);
 
-console(appData.budget / 30);
+appData.moneyPerDay = appData.budget / 30;
+alert("Budget per day:" + appData.moneyPerDay);
+
+if (appData.moneyPerDay < 100) {
+    console.log('Poor');
+} else if (appData.moneyPerDay > 2000) {
+    console.log('Rich')
+} else{
+    console.log('Middle class')
+}
 
 
 // let answer = confirm("Hello world!");
