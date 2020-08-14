@@ -17,103 +17,97 @@ P.S. Здесь есть несколько вариантов решения з
 
 'use strict';
 
-const movieDB = {
-    movies: [
-        "Логан",
-        "Лига справедливости",
-        "Ла-ла лэнд",
-        "Одержимость",
-        "Скотт Пилигрим против...",
-    ]
-};
-
-const ads = document.querySelectorAll(".promo__adv img"),
-      background = document.querySelector('.promo__bg'),
-      genres = background.querySelector(".promo__genre"),
-      filmList = document.querySelector('.promo__interactive-list'),
-      interactiveForm = document.querySelector('.promo__interactive'),
-      addForm = interactiveForm.querySelector('.add'),
-      addBtn = addForm.querySelector('button'),
-      chkBox = addForm.querySelector('[type="checkbox"]');
-
-const addNewMovieToList = (e) => {
-    e.preventDefault();
-    const newMovieName = addForm.querySelector('.adding__input').value;
-    movieDB.movies.push(cutMovieName(newMovieName));
-
-    if (chkBox.checked) {
-        console.log("Добавляем любимый фильм");
-    }
-
-    showMovieList();
-};
-
-const deleteMovie = (e) => {
-    let movieToDelete = e.currentTarget.parentElement.textContent;
-    const index = movieToDelete.indexOf(' ');
-
-    movieToDelete = movieToDelete.slice(index+1);
-    movieDB.movies = removeFromDB(movieDB.movies, movieToDelete.trim());
-
-    showMovieList();
-};
-
-showMovieList();
-
-ads.forEach(item => {
-    item.remove();
-});
-
-genres.textContent = 'ДРАМА';
-
-background.style.backgroundImage = `url('img/bg.jpg')`;
-
-addBtn.addEventListener('click', addNewMovieToList);
-background.addEventListener('click', addNewMovieToList);
-
-function cutMovieName(movie) {
-    let cutMovie = movie;
-    if (movie.length > 21) {
-        cutMovie = movie.slice(0, 18) + '...';
-    }
-
-    return cutMovie;
-}
-
-function cutMoviesInMovieDB(list) {
-    for (let i = 0; i < list.length; i++) {
-        list[i] = cutMovieName(list[i]);
-    }
-}
-
-function showMovieList() {
-    filmList.innerHTML = '';
-
-    movieDB.movies.sort();
- 
-    movieDB.movies.forEach((film, i) => {
-        filmList.innerHTML += `
-            <li class="promo__interactive-item">${i+1}. ${film}
-                <div class="delete"></div>
-            </li>    
-        `;
-    });   
+document.addEventListener('DOMContentLoaded', () => {
+    const movieDB = {
+        movies: [
+            "Логан",
+            "Лига справедливости",
+            "Ла-ла лэнд",
+            "Одержимость",
+            "Скотт Пилигрим против...",
+        ]
+    };
     
-    updateDeleteBtns();
-}
+    const ads = document.querySelectorAll(".promo__adv img"),
+          background = document.querySelector('.promo__bg'),
+          genres = background.querySelector(".promo__genre"),
+          filmList = document.querySelector('.promo__interactive-list'),
+          interactiveForm = document.querySelector('.promo__interactive'),
+          addForm = interactiveForm.querySelector('.add'),
+          addInput = addForm.querySelector('.adding__input'),
+          chkBox = addForm.querySelector('[type="checkbox"]');
 
-function updateDeleteBtns() {
-    const trashBtns = interactiveForm.querySelectorAll('.delete');
-    trashBtns.forEach(item => {
-        item.addEventListener('click', deleteMovie);
-    });
-}
+    const removeElements = (arr) => {
+        arr.forEach(item => {
+            item.remove();
+        });
+    };
 
-function removeFromDB(arr, name) {
-    let index = arr.indexOf(name);
+    const initialChanges = () => {
+        genres.textContent = 'ДРАМА';
+        background.style.backgroundImage = `url('img/bg.jpg')`;
+    };
+    
+    const addNewMovieToList = (e) => {
+        e.preventDefault();
+        const newMovieName = addInput.value;
 
-    if (index > -1) {
-        arr.splice(index, 1);
+        if (newMovieName) {
+            movieDB.movies.push(cutMovieName(newMovieName));
+        
+            if (chkBox.checked) {
+                console.log("Добавляем любимый фильм");
+            }
+        
+            showMovieList(movieDB.movies, filmList);            
+        }
+
+        e.target.reset();
+    };
+
+    const sortArray = (arr) => {
+        arr.sort();
+    };
+
+    function cutMovieName(movie) {
+        let cutMovie = movie;
+        if (movie.length > 21) {
+            cutMovie = movie.slice(0, 18) + '...';
+        }
+    
+        return cutMovie;
     }
-    return arr;
-}
+
+    function showMovieList(films, parent) {
+        parent.innerHTML = '';
+
+        sortArray(films);
+     
+        films.forEach((film, i) => {
+            parent.innerHTML += `
+                <li class="promo__interactive-item">${i+1}. ${film}
+                    <div class="delete"></div>
+                </li>    
+            `;
+        });   
+
+        updateDeleteBtns(films, parent);
+    }
+    
+    function updateDeleteBtns(films, parent) {
+        const trashBtns = interactiveForm.querySelectorAll('.delete');
+        trashBtns.forEach((item, i) => {
+            item.addEventListener('click', () => {
+                item.parentElement.remove();
+                films.splice(i, 1);
+                showMovieList(films, parent);
+            });
+        });
+    }
+    
+    removeElements(ads);
+    initialChanges();
+    showMovieList(movieDB.movies, filmList);
+
+    addForm.addEventListener('submit', addNewMovieToList);
+});
